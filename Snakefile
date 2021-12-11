@@ -18,6 +18,7 @@ include: os.path.join(maindir, "rules", "FASTQ.smk")
 include: os.path.join(maindir, "rules", "Bowtie2.smk")
 include: os.path.join(maindir, "rules", "Bam2Cram.smk")
 include: os.path.join(maindir, "rules", "SamtoolsCoverageStats.smk")
+include: os.path.join(maindir, "rules", "ExonGeneCoverage.smk")
 
 ### execute before workflow starts #############################################
 ################################################################################
@@ -42,6 +43,8 @@ rule all:
         expand("originalFASTQ/{sample}{read}.fastq.gz", sample = samples, read = reads),
         expand("CRAM/{sample}.cram", sample = samples),
         expand("CoverageStats/{sample}.stats", sample = samples),
+        expand("ExonGeneCoverage/{sample}_exonCov.txt", sample = samples),
+        expand("ExonGeneCoverage/{sample}_aggGeneCov.txt", sample = samples),
 
 ### execute after workflow finished ############################################
 ################################################################################
