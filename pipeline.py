@@ -115,6 +115,12 @@ def main():
     # set default values
     workflowDir, defaults = cf.setDefaults()
 
+    # get command line arguments
+    parser = parse_args(defaults)
+    args = parser.parse_args()
+    args, defaults = cf.handleUserArgs(args, defaults, parse_args)
+
+
     pass
 
 if __name__ == "__main__":
