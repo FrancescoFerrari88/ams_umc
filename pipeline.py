@@ -11,6 +11,7 @@ import os
 import sys
 import textwrap
 import parserCommon
+import common_functions as cf
 
 def parse_args(defaults={"verbose": False, "configFile": None,
                          "maxJobs": 5, "tmpDir": None, "trim": False,
@@ -32,6 +33,11 @@ def parse_args(defaults={"verbose": False, "configFile": None,
         add_help=True
     )
 
+    # add positional argument specifying organism
+    genomes = parserCommon.ListGenomes()
+    parser.add_argument("genome", metavar="GENOME", 
+    help="Genome acronym of the target organism. \
+        Either a yaml file or one of: {}".format(", ".join(genomes)))
     # Workflow options
 
     # define required arguments 
@@ -104,3 +110,13 @@ def parse_args(defaults={"verbose": False, "configFile": None,
                           default=defaults["aligner"])
 
     return parser
+
+def main():
+    # set default values
+    workflowDir, defaults = cf.setDefaults()
+
+    pass
+
+if __name__ == "__main__":
+    main()
+    

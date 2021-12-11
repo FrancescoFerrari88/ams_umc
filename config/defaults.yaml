@@ -1,0 +1,58 @@
+###############################################################################
+# This file is the default configuration of the workflow!
+#
+# In order to adjust some parameters, please either use the wrapper script
+# (eg. /path/to/snakemake_workflow/pipeline.py)
+# or save a copy of this file, modify necessary parameters and then provide
+# this file to the wrapper or snakmake via '--configFile' option
+# (see below how to call the snakefile directly)
+#
+################################################################################
+snakemake_executable: /Users/francescoferrari/anaconda3/envs/snakemake_amsumc/bin/snakemake
+tmpDir: /tmp/temp_snakemake/
+
+## General/Snakemake parameters, only used/set by wrapper or in Snakemake cmdl, but not in Snakefile
+pipeline: dna-mapping
+outdir:
+configFile:
+maxJobs: 5
+## directory with fastq files
+indir:
+## preconfigured target genomes (mm9,mm10,dm3,...) , see /path/to/snakemake_workflow/organisms/
+## Value can be also path to your own genome config file!
+genome:
+## FASTQ file extension (default: ".fastq.gz")
+ext: '.fastq.gz'
+## paired-end read name extension (default: ['_R1', "_R2"])
+reads: [_R1, _R2]
+# aligner
+aligner: Bowtie2
+## Options for trimming
+trim: False
+trimmer: cutadapt
+trimmerOptions:
+## Retain only de-duplicated reads/read pairs
+dedup: false
+## Retain only reads with at least the given mapping quality
+mapq: 0
+## Retain only reads mapping in proper pairs
+properPairs: false
+## Mate orientation in paired-end experiments for Bowtie2 mapping
+## (default "--fr" is appropriate for Illumina sequencing)
+mateOrientation: --fr
+## other Bowtie2 stuff
+insertSizeMax: 1000
+alignerOpts:
+verbose: true
+################################################################################
+# Call snakemake directly, i.e. without using the wrapper script:
+#
+# Please save a copy of this config yaml file and provide an adjusted config
+# via '--configFile' parameter!
+# example call:
+#
+# snakemake --snakefile /path/to/snakemake_workflow/Snakefile
+#           --configFile /path/to/snakemake_workflow/config/defaults.yaml
+#           --directory /path/to/outputdir
+#           --cores 32
+################################################################################
