@@ -11,4 +11,4 @@ dependencies:
   - pyyaml
   - snakemake
   - sambamba
-prefix: /Users/francescoferrari/anaconda3/envs/snakemake_amsumc
+#prefix: /Users/francescoferrari/anaconda3/envs/snakemake_amsumc
