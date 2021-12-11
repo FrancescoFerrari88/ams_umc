@@ -16,11 +16,22 @@ def merge_dicts(x, y):
         z.update(y)
     return z
 
+# this is a pure sanity function to avoid obvious mailfunction during snakefile execution
+# because we load yaml/path/genome configs directly into global namespace!
+def sanity_dict_clean(myDict):
+    if not type(myDict) == dict:
+        raise TypeError("provide dict as argument")
+    unwanted_keys = ['maindir', 'workflow']
+    for k in unwanted_keys:
+        if myDict and k in myDict:
+            del myDict[k]
+    return myDict
+
 def load_configfile(configFiles, verbose, info='Config'):
     with open(configFiles, "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    config = config
+    config = sanity_dict_clean(config)
 
     if verbose:
         print("\n--- " + info + " ---------------------------------------------------------------------")
