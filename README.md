@@ -163,4 +163,4 @@ The pipeline generates 5 folders in the output path:
 - **CoverageStats**: collects per-base coverage stats computed over the whole genome
 - **ExonGeneCoverage**: collects exon mean coverage ( _sample_name_\_exonCov.txt) and gene-level aggregate mean coverage (_sample_name_\_aggGeneCov.txt)
 
-In the output folder, you will also find copy of the config parameters used in the analysis (pipeline.config.yaml) and the complete stdout generated during pipeline execution (pipeline.py_run-1.yaml). If you run the pipeline several tiles, new stdout log files will be added.
+In the output folder, you will also find copy of the config parameters used in the analysis (pipeline.config.yaml) and the complete stdout generated during pipeline execution (pipeline.py_run-1.yaml). If you run the pipeline several times, new stdout log files will be added.
