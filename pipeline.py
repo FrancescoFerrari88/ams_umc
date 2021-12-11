@@ -120,6 +120,9 @@ def main():
     args = parser.parse_args()
     args, defaults = cf.handleUserArgs(args, defaults, parse_args)
 
+    # create snakemake cmd that will be run as subprocess
+    snakemake_cmd = cf.commonYAMLandLogs(workflowDir, defaults, args, __file__)
+    
 
     pass
 

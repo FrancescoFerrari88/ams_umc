@@ -54,3 +54,41 @@ def handleUserArgs(args, defaults, args_func):
         args = parser.parse_args()
     defaults.update(vars(args)) # here vars returns the __dict__ method of args
     return args, defaults
+
+def write_configfile(configFile, config):
+    with open(configFile, 'w') as f:
+        yaml.dump(config, f, default_flow_style=False)
+
+def commonYAMLandLogs(workflowDir, defaults, args, callingScript):
+    """
+    Merge dictionaries, write YAML files, construct the snakemake command
+    and create the DAG
+    """
+    workflowName = ".".join(os.path.basename(callingScript).split(".")[:-1])
+
+    # create outdit and temporary directory 
+    os.makedirs(args.outdir, exist_ok=True)
+    os.makedirs(args.tmpDir, exist_ok=True)
+
+    # save to configs.yaml in outdir
+    config = defaults
+    config.update(vars(args))  # This modify args after handling a user config file to still make it to the YAML given to snakemake!
+    write_configfile(os.path.join(args.outdir, '{}.config.yaml'.format(workflowName)), config)
+
+    snakemake_cmd = """
+                    TMPDIR={tempDir} PYTHONNOUSERSITE=True {snakemake} {snakemakeOptions} \
+                    --latency-wait {latency_wait} --snakefile {snakefile} --jobs {maxJobs} \
+                    --directory {workingdir} --configfile {configFile} --keep-going
+                    """.format(snakemake=args.snakemake_executable,
+                               latency_wait=10,
+                               snakefile=os.path.join(workflowDir, "Snakefile"),
+                               maxJobs=args.maxJobs,
+                               workingdir=args.outdir,
+                               snakemakeOptions='',
+                               tempDir=args.tmpDir,
+                               configFile=os.path.join(args.outdir, '{}.config.yaml'.format(workflowName))).split()
+
+    if args.verbose:
+        snakemake_cmd.append("--printshellcmds")
+
+    return " ".join(snakemake_cmd)
