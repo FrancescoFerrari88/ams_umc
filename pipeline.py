@@ -129,9 +129,6 @@ def main():
     # run pipeline
     cf.runAndCleanup(args, snakemake_cmd, logfile_name)
 
-
-    pass
-
 if __name__ == "__main__":
     main()
     

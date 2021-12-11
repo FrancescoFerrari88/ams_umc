@@ -5,6 +5,7 @@
 import subprocess
 import os
 import yaml
+import re
 import sys
 import glob
 
@@ -152,3 +153,62 @@ def runAndCleanup(args, cmd, logfile_name):
         if os.path.exists(os.path.join(args.outdir, ".snakemake")):
             import shutil
             shutil.rmtree(os.path.join(args.outdir, ".snakemake"), ignore_errors=True)
+
+def load_organism_data(genome, maindir, verbose):
+
+    if os.path.isfile(os.path.join(maindir, 'organisms', genome + ".yaml")):
+        organism = load_configfile(os.path.join(maindir, 'organisms', genome + ".yaml"), verbose, "Genome")
+    else:
+        exit("ERROR: Genome configuration file NOT found for: {}\n".format(genome))
+    return organism
+
+def get_sample_names(infiles, ext, reads):
+    """
+    Get sample names without file extensions
+    """
+    s = set()
+    lext = len(ext)
+    l0 = len(reads[0])
+    l1 = len(reads[1])
+    for x in infiles:
+        x = os.path.basename(x)[:-lext]
+        if x.endswith(reads[0]):
+            x = x[:-l0]
+            s.add(x)
+        elif x.endswith(reads[1]):
+            x = x[:-l1]
+            s.add(x)
+        else:
+            sys.stderr.write("Warning! {} does not have {} as its name suffix. "
+                             "Either change it or modify the 'reads' in the "
+                             "config.yaml to your deired ones.\n".format(x, reads))
+
+    if sorted(list(s)) == []:
+        sys.exit("Error! No sample has the right read suffix ({}). "
+                 "Please modify them or update the config.yaml with "
+                 "your desired suffix.".format(reads))
+    return sorted(list(s))
+
+def is_paired(infiles, ext, reads):
+    """
+    Check for paired-end input files
+    """
+    pairedEnd = False
+    infiles_dic = {}
+    for infile in infiles:
+        fname = os.path.basename(infile).replace(ext, "")
+        m = re.match("^(.+)(" + reads[0] + "|" + reads[1] + ")$", fname)
+        if m:
+            bname = m.group(1)
+            if bname not in infiles_dic:
+                infiles_dic[bname] = [infile]
+            else:
+                infiles_dic[bname].append(infile)
+    if not infiles_dic:
+        sys.exit("Error: No fastq file has been found to be checked.")
+    values_length = [len(x) for x in infiles_dic.values()]
+    if min(values_length) == 2:
+        pairedEnd = True
+    elif min(values_length) == 1 and max(values_length) == 2:
+        sys.exit("Error: The directory contains a mixture of paired-end and single-end data!")
+    return pairedEnd
