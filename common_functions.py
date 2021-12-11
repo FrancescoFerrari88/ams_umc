@@ -5,6 +5,7 @@
 import os
 import yaml
 import sys
+import glob
 
 def merge_dicts(x, y):
     z = {}
@@ -92,3 +93,19 @@ def commonYAMLandLogs(workflowDir, defaults, args, callingScript):
         snakemake_cmd.append("--printshellcmds")
 
     return " ".join(snakemake_cmd)
+
+def logAndExport(args, workflowName):
+    """
+    Set up logging
+    """
+    # Write snakemake_cmd to log file
+    fnames = glob.glob(os.path.join(args.outdir, '{}_run-[0-9]*.log'.format(workflowName)))
+    if len(fnames) == 0:
+        n = 1  # no matching files, this is the first run
+    else:
+        fnames.sort(key=os.path.getctime)
+        n = int(fnames[-1].split("-")[-1].split(".")[0]) + 1  # get new run number
+    # append the new run number to the file name
+    logfile_name = "{}_run-{}.log".format(workflowName, n)
+
+    return logfile_name

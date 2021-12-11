@@ -122,7 +122,10 @@ def main():
 
     # create snakemake cmd that will be run as subprocess
     snakemake_cmd = cf.commonYAMLandLogs(workflowDir, defaults, args, __file__)
-    
+
+    # setup logging
+    logfile_name = cf.logAndExport(args, os.path.basename(__file__))
+
 
     pass
 
