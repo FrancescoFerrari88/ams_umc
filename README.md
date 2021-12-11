@@ -38,15 +38,17 @@ Before using the pipeline, you need to create an organim folder with the genome 
 
 ### Example
 
-0. Create a folder called GRCh37p13
-   mkdir /path/to/GRCh37p13; cd /path/to/GRCh37p13; mkdir genome bowtie_index annotation
-1. In /path/to/GRCh37p13/genome, download NCBI human genome GRCh37.p13 (hg19) that you find at the following address:
+0.  Create a folder called GRCh37p13
 
-   > https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.25_GRCh37.p13/GCF_000001405.25_GRCh37.p13_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/
+        mkdir /path/to/GRCh37p13; cd /path/to/GRCh37p13; mkdir genome bowtie_index annotation
+
+1.  In /path/to/GRCh37p13/genome, download NCBI human genome GRCh37.p13 (hg19) that you find at the following address:
+
+    > https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.25_GRCh37.p13/GCF_000001405.25_GRCh37.p13_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/
 
 After downloading all chromosomes, concatenate them to generate a genome fasta file
 
-        cat \*.gz > GRCh37.p13.fa.gz
+        cat *.gz > GRCh37.p13.fa.gz
 
 In the same folder, generate an unzipped version of the genome with its index:
 
@@ -67,17 +69,17 @@ Finally, you can create a bed file with non-overlapping exons extended by 6 nucl
 
         awk '{if ($3=="exon"){print $0}}' GRCh37*latest_genomic.sorted.gtf | awk 'BEGIN {OFS="\t"} {print $1,$4-6,$5+6,$10,$6,$7 }' | grep "^NC*" | bedtools merge -c 4 -o distinct | awk '! /;,/{print $0}' | awk -v OFS="\t" '{print $1,$2,$3,substr($4,2,length($4)-3) }' > uniq_merged_exons.bed
 
-## Organim Config
+## Organism Config
 
-Next, you need to configure the organims/organim.yaml file to point to the respective files/folders.
+Next, you need to configure the organisms/organism.yaml file to point to the respective files/folders.
 
 1. Customize organism config file:
 
-inside the repository, open organisms/organim.yaml and fill in the absolute paths to fasta_genome (1), bowtie2_index (2), extended_exon_bed (3), genome_length (4). To get the total genome length, run:
+Inside the repository, open organisms/organism.yaml and fill in the absolute paths to fasta_genome (1 - non gzipped), bowtie2_index (2), extended_exon_bed (3), genome_length (4). To get the total genome length, run:
 
         bowtie2-inspect -s /path/to/bwt2-idx/bt2_base | awk '{ FS = "\t" } ; BEGIN{L=0}; {L=L+$3}; END{print L}'
 
-An example organim config file is present in organims/hg19.yaml
+An example organim config file is present in organisms/hg19.yaml
 
 ## Usage
 
@@ -137,16 +139,28 @@ To have an overview of the usage and available parameters, run
 
 You can control the behaviour of the pipeline, by changing the values of the parameters. You can do that in 3 ways:
 
-1. Globally, by changing the values of the config file in config/defaults.yaml;
+1. Globally, by changing the values of the default config file in config/defaults.yaml;
 2. Per single run, providing a custom config file using the option --configFile;
 3. Per single option, providing value to single option flags;
 
-Some parameters can be only be controlled using the config file (either default or custom). Of particular importance is the parameter "reads".
+Some parameters can only be controlled using the config file (either default or custom). Of particular importance is the parameter "reads".
 
-> "reads" specify the format of the portion of the fastq file name that carry information as to whether the read is R1 or R2 in a paired-end experiment. This portion of the filename is expected to be immediately before the extension ("ext") and immediately after the sample name.
+> "reads" specify the format of the portion of the fastq filename that carries information as to whether the read is R1 or R2 in a paired-end experiment. This portion of the filename is expected to be immediately before the extension (ext: "fastq.gz") and immediately after the sample name.
 >
 > ### Example
 >
-> If the paired fastq file names are "D1_S1_L001_R1_001.fastq.gz" (R1) and "D1_S1_L001_R2_001.fastq.gz", the parameter "reads" will be:
+> If the paired fastq file names are "D1_S1_L001_R1_001.fastq.gz" (R1) and "D1_S1_L001_R2_001.fastq.gz" (R2), the parameter "reads" will be:
 >
 >        reads: ['R1_001','R2_001']
+
+## Understanding the Output
+
+The pipeline generates 5 folders in the output path:
+
+- **originalFASTQ**: collects soft links to the original input fastq files
+- **Bowtie2**: collects summary statistics about the mapping of the input samples
+- **CRAM**: collects alignment data in cram format
+- **CoverageStats**: collects per-base coverage stats computed over the whole genome
+- **ExonGeneCoverage**: collects exon mean coverage ( _sample_name_\_exonCov.txt) and gene-level aggregate mean coverage (_sample_name_\_aggGeneCov.txt)
+
+In the output folder, you will also find copy of the config parameters used in the analysis (pipeline.config.yaml) and the complete stdout generated during pipeline execution (pipeline.py_run-1.yaml). If you run the pipeline several tiles, new stdout log files will be added.

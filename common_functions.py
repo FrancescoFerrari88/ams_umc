@@ -92,7 +92,7 @@ def commonYAMLandLogs(workflowDir, defaults, args, callingScript):
     snakemake_cmd = """
                     TMPDIR={tempDir} PYTHONNOUSERSITE=True {snakemake} {snakemakeOptions} \
                     --latency-wait {latency_wait} --snakefile {snakefile} --jobs {maxJobs} \
-                    --directory {workingdir} --configfile {configFile} --keep-going
+                    --directory {workingdir} --configfile {configFile} --keep-going 
                     """.format(snakemake=args.snakemake_executable,
                                latency_wait=10,
                                snakefile=os.path.join(workflowDir, "Snakefile"),

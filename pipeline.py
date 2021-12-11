@@ -6,6 +6,8 @@ usage example:
     ./pipeline.py -i /abs/path/to/input-dir/ -o output-dir hg19
 """
 
+__version__ = "0.0.1"
+
 import argparse
 import os
 import sys

@@ -3,6 +3,7 @@
 import argparse
 import os.path
 import glob
+from pipeline import __version__
 
 def ListGenomes():
     """
@@ -33,6 +34,10 @@ def GeneralArguments(defaults={
                          action="store_true",
                          help="verbose output (default: '%(default)s')",
                          default=defaults["verbose"])
+    general_args.add_argument("--version",
+                         action="version",
+                         version="%(prog)s {}".format(__version__))
+
 
     return parser
 
