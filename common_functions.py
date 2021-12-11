@@ -2,6 +2,7 @@
 
 # general functions for workflow #############################################
 ##############################################################################
+import subprocess
 import os
 import yaml
 import sys
@@ -109,3 +110,45 @@ def logAndExport(args, workflowName):
     logfile_name = "{}_run-{}.log".format(workflowName, n)
 
     return logfile_name
+
+
+def runAndCleanup(args, cmd, logfile_name):
+    """
+    Actually run snakemake. Kill its child processes on error.
+    Also clean up when finished.
+    """
+    if args.verbose:
+        print("\n{}\n".format(cmd))
+
+    # write log file
+    f = open(os.path.join(args.outdir, logfile_name), "w")
+    f.write(" ".join(sys.argv) + "\n\n")
+    f.write(cmd + "\n\n")
+
+    # Run snakemake, stderr -> stdout is needed so readline() doesn't block
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if args.verbose:
+        print("PID:", p.pid, "\n")
+
+    while p.poll() is None:
+        stdout = p.stdout.readline(1024)
+        if stdout:
+            sys.stdout.write(stdout.decode('utf-8'))
+            f.write(stdout.decode('utf-8'))
+            sys.stdout.flush()
+            f.flush()
+
+    # This avoids the race condition of p.poll() exiting before we get all the output
+    stdout = p.stdout.read()
+    if stdout:
+        sys.stdout.write(stdout.decode('utf-8'))
+        f.write(stdout.decode('utf-8'))
+    f.close()
+
+    # Exit with an error if snakemake encountered an error
+    if p.returncode != 0:
+        sys.stderr.write("Error: snakemake returned an error code of {}, so processing is incomplete!\n".format(p.returncode))
+    else:
+        if os.path.exists(os.path.join(args.outdir, ".snakemake")):
+            import shutil
+            shutil.rmtree(os.path.join(args.outdir, ".snakemake"), ignore_errors=True)

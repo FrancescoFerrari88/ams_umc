@@ -126,6 +126,9 @@ def main():
     # setup logging
     logfile_name = cf.logAndExport(args, os.path.basename(__file__))
 
+    # run pipeline
+    cf.runAndCleanup(args, snakemake_cmd, logfile_name)
+
 
     pass
 
