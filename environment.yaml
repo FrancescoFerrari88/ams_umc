@@ -1,0 +1,14 @@
+name: snakemake_amsumc
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.8
+  - bowtie2
+  - samtools
+  - bedtools
+  - pyyaml
+  - snakemake
+  - sambamba
+prefix: /Users/francescoferrari/anaconda3/envs/snakemake_amsumc

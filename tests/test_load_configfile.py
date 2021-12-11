@@ -10,6 +10,7 @@ from common_functions import (
 )
 
 class TestSanityDictClean(unittest.TestCase):
+    """ test set for cf.sanity_dict_clean helper function """
 
     def setUp(self):
         self.dictionary = {
@@ -28,6 +29,7 @@ class TestSanityDictClean(unittest.TestCase):
         self.assertRaises(TypeError, sanity_dict_clean, list(self.dictionary)[0])
 
 class TestLoadConfigfile(unittest.TestCase):
+    """ test set for cf.load_configfile helper function """
 
     def setUp(self):
         self.key_names = [

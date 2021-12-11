@@ -27,7 +27,7 @@ ext: '.fastq.gz'
 reads: [_R1, _R2]
 # aligner
 aligner: Bowtie2
-## Options for trimming
+## TODO Options for trimming
 trim: False
 trimmer: cutadapt
 trimmerOptions:
