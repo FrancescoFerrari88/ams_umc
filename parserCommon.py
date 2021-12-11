@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 
 import argparse
+import os.path
+import glob
+
+def ListGenomes():
+    """
+    Return a list of all genome yaml files (sans the .yaml suffix)
+    """
+    dName = os.path.dirname(__file__)
+    genomes = [os.path.basename(f)[:-5] for f in glob.glob(os.path.join(dName, "organisms/*.yaml"))]
+    return genomes
 
 def GeneralArguments(defaults={
     'snakemake_executable': None,

@@ -1,0 +1,4 @@
+bowtie2_index: /Users/francescoferrari/amsterdamumc/bowtie_index/GRCh37.p13
+fasta_genome: /Users/francescoferrari/amsterdamumc/genome/fasta/GRCh37.p13.fa
+extended_exon_bed: /Users/francescoferrari/amsterdamumc/annotation/uniq_merged_exons.bed
+genome_length: 3095677412
