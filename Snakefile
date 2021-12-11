@@ -11,9 +11,10 @@ globals().update(cf.load_configfile(workflow.overwrite_configfiles[0], config["v
 globals().update(cf.load_organism_data(genome, maindir, config["verbose"]))
 
 # do workflow specific stuff
-include: os.path.join(workflow.basedir, "internals.smk")
+include: os.path.join(maindir, "internals.smk")
 
 # import rules
+include: os.path.join(maindir, "rules", "FASTQ.smk")
 
 ### execute before workflow starts #############################################
 ################################################################################
@@ -33,6 +34,10 @@ onstart:
 ### main rule ##################################################################
 ################################################################################
 
+rule all:
+    input:
+        expand("originalFASTQ/{sample}{read}.fastq.gz", sample = samples, read = reads),
+        expand("CRAM/{sample}.cram", sample = samples),
 
 ### execute after workflow finished ############################################
 ################################################################################
